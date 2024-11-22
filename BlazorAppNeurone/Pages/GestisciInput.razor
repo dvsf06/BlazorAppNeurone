@@ -1,0 +1,52 @@
+﻿@page "/gestisciinput"
+<PageTitle>Input</PageTitle>
+
+<h1>Gestisci input</h1>
+
+<input type="number" @bind="nInput"/>
+<button @onclick="CreaTabellaClick">Crea tabella</button>
+
+@if (renderTable)
+{
+    <table>
+        <thead>
+            <tr>
+                @for (int i = 0; i < nInput + 1; i++)
+                {
+                    <th scope="col">@((i != nInput) ? $"I{i + 1}" : "Target")</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < (int)Math.Pow(nInput, 2); i++)
+            {
+                <tr>
+                    @for (int j = 0; j < nInput + 1; j++)
+                    {
+                        if(j != nInput)
+                        {
+                            <td><input type="number" @bind="testSet[j, i]" /></td>
+                        }
+                        else
+                        {
+                            <td>0</td>
+                        }                        
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    bool renderTable = false;
+
+    int[,] testSet;
+    int nInput;
+
+    private void CreaTabellaClick()
+    {
+        testSet = new int[nInput, (int)Math.Pow(nInput, 2)];
+        renderTable = true;
+    }
+}
