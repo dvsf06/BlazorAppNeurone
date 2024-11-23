@@ -2,8 +2,130 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Percettrone</h1>
+<h1 class="display-4">Percettrone</h1>
+<hr />
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <form>
+                            <div class="mb-3">
+                                <label for="inputNInput" class="form-label">Numero di input</label>
+                                <input type="number" min="1" class="form-control" id="inputNInput" value="@nInput" @oninput="(args) => AggiornaListaPesi(args)">
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputBias" class="form-label">Bias</label>
+                                <input type="number" class="form-control" id="inputBias" @bind="bias">
+                            </div>
+                            <div class="mb-3">
+                                <label for="inputLearningRate" class="form-label">Learing Rate</label>
+                                <input type="number" class="form-control" id="inputLearningRate" @bind="learningRate">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Test set</label>
+                                <select class="form-select" @bind="testSetName">
+                                    <option selected>Seleziona test set</option>
+                                    @foreach (string item in listaTestSets)
+                                    {
+                                        <option value="@item.Substring(Neurone.SavePath.Length)">@item.Substring(Neurone.SavePath.Length)</option>
+                                    }
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-primary" @onclick="AvviaNeuroneClick">Avvia Neurone</button>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="checkPesi" @bind="cbPesiValue" @bind:event="oninput">
+                            <label class="form-check-label" for="checkPesi">
+                                Pesi casuali
+                            </label>
+                        </div>
+                        @if (!cbPesiValue)
+                        {
+                            <div class="mb-3">
+                                    <label class="mb-1">W0</label>
+                                    <input type="text" class="form-control" value="" @onchange="@((args) => listaPesi[0] = Convert.ToDecimal(args.Value.ToString()))" />
+                            </div>
+                            @for (int i = 0; i < nInput; i++)
+                            {
+                                int captI = i;
+                                <div class="mb-3">
+                                    <label class="mb-1">W @(i+1)</label>
+                                    <input type="text" class="form-control" value="" @onchange="@((args) => listaPesi[captI] = Convert.ToDecimal(args.Value.ToString()))" />
+                                </div>
+                            }
+                        }                        
+                    </div>
+                </div>
+            </div>            
+        </div>
+        <div class="col">
+            <div class="mb-3">
+                <label for="outputTextArea" class="form-label">Output</label>
+                <textarea class="form-control" id="outputTextArea" rows="15">@output</textarea>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code{
+        string[] listaTestSets;
+        decimal[] listaPesi;
 
+        byte nInput;
+        decimal bias;
+        decimal learningRate;
+        bool cbPesiValue;
+
+        string output = "";
+        string testSetName;
+
+        private async void AvviaNeuroneClick()
+        {
+            output = "";
+            Neurone.DeserializzaTestSet(testSetName);
+            Neurone neurone;
+            if (cbPesiValue)
+            {
+                neurone = new Neurone(nInput, bias, learningRate);
+            }
+            else
+            {
+                neurone = new Neurone(nInput, bias, learningRate, listaPesi);
+            }       
+
+            do
+            {
+                int epoca = neurone.NuovaEpoca();
+                output += $"Epoca: {epoca} --- Pesi:";
+                for (int i = 0; i < neurone.Pesi.Length; i++)
+            {
+                if(i != neurone.Pesi.Length - 1)
+                {
+                    output += $" {neurone.Pesi[i]},";
+                }
+                else
+                {
+                    output += $" {neurone.Pesi[i]}.\n";
+                }
+            }
+        } while (!neurone.Converge);
+        output += "CONVERGE\n";
+    }
+
+    private void AggiornaListaPesi(ChangeEventArgs args)
+    {
+        nInput = Convert.ToByte(args.Value);
+        listaPesi = new decimal[nInput + 1];
+    }
+
+    protected override void OnInitialized()
+    {
+        listaTestSets = Directory.GetFiles(Neurone.SavePath);
+        base.OnInitialized();
+    }
 }

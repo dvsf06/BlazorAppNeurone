@@ -92,18 +92,18 @@ namespace BlazorAppNeurone.Models
             return (byte)((sommaPesata > 0) ? 1 : 0);
         }
 
-        public static void SerializzaTestSet()
+        public static void SerializzaTestSet(string NomeFile)
         {
             string serMatriceInput = JsonConvert.SerializeObject(matriceInput);
             string serVettoreTarget = JsonConvert.SerializeObject(vettoreTarget);
             string serializedTestSet = "{matriceInput:" + serMatriceInput + ", vettoreTarget:" + serVettoreTarget + "}";
             Console.WriteLine(serializedTestSet);
-            File.WriteAllText(savePath + "testSet.json", serializedTestSet);
+            File.WriteAllText(savePath + NomeFile + ".json", serializedTestSet);
         }
 
-        public static void DeserializzaTestSet()
+        public static void DeserializzaTestSet(string NomeFile)
         {
-            JObject testSet = JObject.Parse(File.ReadAllText(savePath + "testSet.json"));
+            JObject testSet = JObject.Parse(File.ReadAllText(savePath + NomeFile));
             matriceInput = testSet["matriceInput"].ToObject<int[,]>();
             vettoreTarget = testSet["vettoreTarget"].ToObject<int[]>();
         }
@@ -114,5 +114,6 @@ namespace BlazorAppNeurone.Models
 
         static public int[,] MatriceInput { get => matriceInput; set => matriceInput = value; }
         static public int[] VettoreTarget { get => vettoreTarget; set => vettoreTarget = value; }
+        static public string SavePath { get => savePath; }
     }
 }

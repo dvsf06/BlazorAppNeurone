@@ -1,15 +1,40 @@
 ﻿@page "/gestisciinput"
 <PageTitle>Input</PageTitle>
 
-<h1>Gestisci input</h1>
+<h1 class="display-4">Gestisci input</h1>
+<hr />
 
-<input type="number" @bind="nInput"/>
-<button @onclick="CreaTabellaClick">Crea tabella</button>
-<button @onclick="SerializzaTestSet">Salva</button>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <label class="form-label">Numero di input</label>
+            <div class="input-group mb-3">
+                @if (!renderTable)
+                {
+                    <input type="number" class="form-control" @bind="nInput">
+                }
+                else
+                {
+                    <input type="number" class="form-control" @bind="nInput" disabled>
+                }
 
-@if (renderTable)
+                <button class="btn btn-outline-primary" type="button" @onclick="CreaTabellaClick">Crea Tabella</button>
+                <button class="btn btn-outline-danger" type="button" @onclick="EliminaTabellaClick">Elimina Tabella</button>
+            </div>
+        </div>
+        <div class="col">
+            <label class="form-label">Nome file</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" @bind="nomeFile">
+                <button class="btn btn-outline-success" type="button" @onclick="SerializzaTestSet">Salva Test Set</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (renderTable && inputSet != null)
 {
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 @for (int i = 0; i < nInput + 1; i++)
@@ -19,7 +44,7 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < (int)Math.Pow(nInput, 2); i++)
+            @for (int i = 0; i < (int)Math.Pow(2, nInput); i++)
             {
                 <tr>
                     @for (int j = 0; j < nInput + 1; j++)
@@ -48,6 +73,7 @@
     int[,] inputSet;
     int[] targetSet;
     int nInput;
+    string nomeFile = "";
 
     private void CreaTabellaClick()
     {
@@ -56,10 +82,17 @@
         renderTable = true;
     }
 
+    private void EliminaTabellaClick()
+    {
+        inputSet = null;
+        targetSet = null;
+        renderTable = false;
+    }
+
     private void SerializzaTestSet()
     {
         Neurone.MatriceInput = inputSet;
         Neurone.VettoreTarget = targetSet;
-        Neurone.SerializzaTestSet();
+        Neurone.SerializzaTestSet(nomeFile);
     }
 }
