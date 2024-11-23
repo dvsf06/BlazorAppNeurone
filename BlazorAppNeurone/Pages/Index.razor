@@ -50,7 +50,7 @@
                                     <label class="mb-1">W0</label>
                                     <input type="text" class="form-control" value="" @onchange="@((args) => listaPesi[0] = Convert.ToDecimal(args.Value.ToString()))" />
                             </div>
-                            @for (int i = 0; i < nInput; i++)
+                            @for (int i = 1; i < nInput + 1; i++)
                             {
                                 int captI = i;
                                 <div class="mb-3">
@@ -73,36 +73,48 @@
 </div>
 
 @code{
-        string[] listaTestSets;
-        decimal[] listaPesi;
+    string[] listaTestSets;
+    decimal[] listaPesi;
 
-        byte nInput;
-        decimal bias;
-        decimal learningRate;
-        bool cbPesiValue;
+    byte nInput;
+    decimal bias;
+    decimal learningRate;
+    bool cbPesiValue;
 
-        string output = "";
-        string testSetName;
+    string output = "";
+    string testSetName;
 
-        private async void AvviaNeuroneClick()
+    private async void AvviaNeuroneClick()
+    {
+        output = "";
+        Neurone.DeserializzaTestSet(testSetName);
+        Neurone neurone;
+        if (cbPesiValue)
         {
-            output = "";
-            Neurone.DeserializzaTestSet(testSetName);
-            Neurone neurone;
-            if (cbPesiValue)
+            neurone = new Neurone(nInput, bias, learningRate);
+        }
+        else
+        {
+            neurone = new Neurone(nInput, bias, learningRate, listaPesi);
+        }       
+
+        output += "Pesi input:";
+        for (int i = 0; i < neurone.Pesi.Length; i++)
+        {
+            if (i != neurone.Pesi.Length - 1)
             {
-                neurone = new Neurone(nInput, bias, learningRate);
+                output += $" {neurone.Pesi[i]},";
             }
             else
             {
-                neurone = new Neurone(nInput, bias, learningRate, listaPesi);
-            }       
-
-            do
-            {
-                int epoca = neurone.NuovaEpoca();
-                output += $"Epoca: {epoca} --- Pesi:";
-                for (int i = 0; i < neurone.Pesi.Length; i++)
+                output += $" {neurone.Pesi[i]}.\n";
+            }
+        }
+        do
+        {
+            int epoca = neurone.NuovaEpoca();
+            output += $"Fine epoca: {epoca} --- Pesi:";
+            for (int i = 0; i < neurone.Pesi.Length; i++)
             {
                 if(i != neurone.Pesi.Length - 1)
                 {
@@ -114,6 +126,18 @@
                 }
             }
         } while (!neurone.Converge);
+        output += "Pesi risultato:";
+        for (int i = 0; i < neurone.Pesi.Length; i++)
+        {
+            if (i != neurone.Pesi.Length - 1)
+            {
+                output += $" {neurone.Pesi[i]},";
+            }
+            else
+            {
+                output += $" {neurone.Pesi[i]}.\n";
+            }
+        }
         output += "CONVERGE\n";
     }
 
