@@ -13,6 +13,7 @@ namespace BlazorAppNeurone.Models
     {
         static int[,] matriceInput = { { 0, 0, 1, 1 }, { 0, 1, 0, 1 } };
         static int[] vettoreTarget = { 0, 0, 0, 1 };
+        static string savePath = "./Data/TestSets/";
 
         byte nInput;
         decimal bias;
@@ -97,17 +98,21 @@ namespace BlazorAppNeurone.Models
             string serVettoreTarget = JsonConvert.SerializeObject(vettoreTarget);
             string serializedTestSet = "{matriceInput:" + serMatriceInput + ", vettoreTarget:" + serVettoreTarget + "}";
             Console.WriteLine(serializedTestSet);
-            File.WriteAllText("../../../testSet.json", serializedTestSet);
+            File.WriteAllText(savePath + "testSet.json", serializedTestSet);
         }
 
         public static void DeserializzaTestSet()
         {
-            JObject testSet = JObject.Parse(File.ReadAllText("../../../testSet.json"));
+            JObject testSet = JObject.Parse(File.ReadAllText(savePath + "testSet.json"));
             matriceInput = testSet["matriceInput"].ToObject<int[,]>();
             vettoreTarget = testSet["vettoreTarget"].ToObject<int[]>();
         }
 
         public decimal[] Pesi { get => vettorePesi; }
         public bool Converge { get => converge; }
+
+
+        static public int[,] MatriceInput { get => matriceInput; set => matriceInput = value; }
+        static public int[] VettoreTarget { get => vettoreTarget; set => vettoreTarget = value; }
     }
 }

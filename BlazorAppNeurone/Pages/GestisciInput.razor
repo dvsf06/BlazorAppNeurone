@@ -5,6 +5,7 @@
 
 <input type="number" @bind="nInput"/>
 <button @onclick="CreaTabellaClick">Crea tabella</button>
+<button @onclick="SerializzaTestSet">Salva</button>
 
 @if (renderTable)
 {
@@ -27,11 +28,12 @@
                         {
                             int captJ = j;
                             int captI = i;
-                            <td><input type="number" value="@testSet[j, i]" @oninput="@((args) => testSet[captJ, captI] = Convert.ToInt32(args.Value))" /></td>
+                            <td><input type="number" value="@inputSet[j, i]" @oninput="@((args) => inputSet[captJ, captI] = Convert.ToInt32(args.Value))" /></td>
                         }
                         else
                         {
-                            <td>0</td>
+                            int captI = i;
+                            <td><input type="number" value="@targetSet[i]" @oninput="@((args) => targetSet[captI] = Convert.ToInt32(args.Value))" /></td>
                         }                        
                     }
                 </tr>
@@ -43,12 +45,21 @@
 @code {
     bool renderTable = false;
 
-    int[,] testSet;
+    int[,] inputSet;
+    int[] targetSet;
     int nInput;
 
     private void CreaTabellaClick()
     {
-        testSet = new int[nInput, (int)Math.Pow(nInput, 2)];
+        inputSet = new int[nInput, (int)Math.Pow(nInput, 2)];
+        targetSet = new int[(int)Math.Pow(nInput, 2)];
         renderTable = true;
+    }
+
+    private void SerializzaTestSet()
+    {
+        Neurone.MatriceInput = inputSet;
+        Neurone.VettoreTarget = targetSet;
+        Neurone.SerializzaTestSet();
     }
 }
