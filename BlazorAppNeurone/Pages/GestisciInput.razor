@@ -25,7 +25,9 @@
                     {
                         if(j != nInput)
                         {
-                            <td><input type="number" @bind="testSet[j, i]" /></td>
+                            int captJ = j;
+                            int captI = i;
+                            <td><input type="number" value="@testSet[j, i]" maxlength="1" @oninput="@((args) => testSet[captJ, captI] = Convert.ToInt32(args.Value))" /></td>
                         }
                         else
                         {
