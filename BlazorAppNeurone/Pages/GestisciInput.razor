@@ -27,7 +27,7 @@
                         {
                             int captJ = j;
                             int captI = i;
-                            <td><input type="number" value="@testSet[j, i]" maxlength="1" @oninput="@((args) => testSet[captJ, captI] = Convert.ToInt32(args.Value))" /></td>
+                            <td><input type="number" value="@testSet[j, i]" @oninput="@((args) => testSet[captJ, captI] = Convert.ToInt32(args.Value))" /></td>
                         }
                         else
                         {
